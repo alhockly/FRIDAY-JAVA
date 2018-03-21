@@ -1,5 +1,6 @@
 # FRIDAY-JAVA
-NLP interface for IoT 
+NLP interface for IoT
+
 Java+NodeMcu(ESP8266)
 
 The Src folder doesn't include the required libraries :( 
