@@ -1,7 +1,7 @@
 <XML>
 <Node>
 	<FName>lights</FName>
-	<Mac>A0:20:A6:02:78:06</Mac>
+	<Mac></Mac>
 <IP>100.71.194.167</IP>
 	<Vals>on,off,blink</Vals>
 </Node>
