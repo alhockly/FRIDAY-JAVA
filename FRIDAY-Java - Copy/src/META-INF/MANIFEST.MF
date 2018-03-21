@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: /G:/CMUSPhinx/Tut1/scr/libraries/sphinx4-data-5prealpha-20
- 160628.232535-10.jar;
-Main-Class: model.SpeechRecognizerMain
-
