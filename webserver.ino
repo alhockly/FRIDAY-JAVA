@@ -10,7 +10,7 @@
 WiFiUDP udp;
 
 // Replace with your network credentials
-const char* ssid     = "studentcom";
+const char* ssid = "studentcom";
 const char* password = "";
 
 const int dstPort = 5000;
@@ -22,20 +22,20 @@ String header;
 
 // Auxiliar variables to store the current output state
 String output5State = "off";
-String output4State = "off";
+String GPIO4State = "off";
 
 // Assign output variables to GPIO pins
 const int output5 = 5;
-const int output4 = 4;
+const int GPIO4 = 4;
 
 void setup() {
   Serial.begin(9600);
   // Initialize the output variables as outputs
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(output4, OUTPUT);
-  // Set outputs to LOW
+  pinMode(GPIO4, OUTPUT);
+  // Set outputs states
   digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(output4, LOW);
+  digitalWrite(GPIO4, HIGH);
 
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
@@ -57,6 +57,23 @@ void setup() {
   udp.write("hi");
   udp.endPacket();
 }
+
+void blink(){
+  if(GPIO4State=="on"){
+    digitalWrite(GPIO4,LOW);
+    delay(550);
+    digitalWrite(GPIO4,HIGH);
+    }
+  if(GPIO4State=="off"){
+    digitalWrite(GPIO4,HIGH);
+    delay(550);
+    digitalWrite(GPIO4,LOW);
+    }
+
+  }
+
+
+
 
 void loop(){
   WiFiClient client = server.available();   // Listen for incoming clients
@@ -89,15 +106,18 @@ void loop(){
               Serial.println("GPIO 5 off");
               output5State = "off";
               digitalWrite(LED_BUILTIN, LOW);
-            } else if (header.indexOf("GET /4/on") >= 0) {
+            } else if (header.indexOf("GET /on") >= 0) {
               Serial.println("GPIO 4 on");
-              output4State = "on";
-              digitalWrite(output4, HIGH);
-            } else if (header.indexOf("GET /4/off") >= 0) {
+              GPIO4State = "on";
+              digitalWrite(GPIO4, HIGH);
+            } else if (header.indexOf("GET /off") >= 0) {
               Serial.println("GPIO 4 off");
-              output4State = "off";
-              digitalWrite(output4, LOW);
-            }
+              GPIO4State = "off";
+              digitalWrite(GPIO4, LOW);
+            }else if (header.indexOf("GET /blink") >= 0) {
+              Serial.println("blinking");
+              blink();
+              }
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -114,7 +134,7 @@ void loop(){
             client.println("<body><h1>ESP8266 Web Server</h1>");
             
             // Display current state, and ON/OFF buttons for GPIO 5  
-            client.println("<p>GPIO 5(Lights) - State " + output5State + "</p>");
+            client.println("<p>Built in LED - State " + output5State + "</p>");
             // If the output5State is off, it displays the ON button       
             if (output5State=="off") {
               client.println("<p><a href=\"/5/on\"><button class=\"button\">ON</button></a></p>");
@@ -123,12 +143,12 @@ void loop(){
             } 
                
             // Display current state, and ON/OFF buttons for GPIO 4  
-            client.println("<p>GPIO 4 - State " + output4State + "</p>");
-            // If the output4State is off, it displays the ON button       
-            if (output4State=="off") {
-              client.println("<p><a href=\"/4/on\"><button class=\"button\">ON</button></a></p>");
+            client.println("<p>Pin D2(Lights) - State " + GPIO4State + "</p>");
+            // If the GPIO4State is off, it displays the ON button       
+            if (GPIO4State=="off") {
+              client.println("<p><a href=\"/on\"><button class=\"button\">ON</button></a></p>");
             } else {
-              client.println("<p><a href=\"/4/off\"><button class=\"button button2\">OFF</button></a></p>");
+              client.println("<p><a href=\"/off\"><button class=\"button button2\">OFF</button></a></p>");
             }
             client.println(WiFi.macAddress());
             client.println("</body></html>");
