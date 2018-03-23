@@ -21,7 +21,7 @@ e.g
 </Node>
 </XML>
 ```
-If user says <FName> followed by a <Vals> then value is send to the corresponding node
+If user says a FName followed by a Vals then the value is send to the corresponding node
 
 # Current functionality
 - Find all Nodes on a local network (brute force + subnet clues)
