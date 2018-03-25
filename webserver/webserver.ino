@@ -10,8 +10,8 @@
 WiFiUDP udp;
 
 // Replace with your network credentials
-const char* ssid = "studentcom";
-const char* password = "";
+const char* ssid = "VM907180-5G";
+const char* password = "qaheyusq";
 
 const int dstPort = 5000;
 // Set web server port number to 80
@@ -30,6 +30,7 @@ const int GPIO4 = 4;
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("Hi I'm "+WiFi.macAddress());
   // Initialize the output variables as outputs
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(GPIO4, OUTPUT);
