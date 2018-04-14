@@ -17,6 +17,7 @@ public class Node {
     String Fname;
     String Mac;
     String IP;
+    List<String> Verbs;
     List<String> Vals;
 
     public boolean isOnline() {
@@ -26,11 +27,22 @@ public class Node {
     boolean isOnline;
 
 
-    public Node(String Fname, String Mac, String IP, String Vals) {
+    public Node(String Fname, String Mac, String IP,String Verbs, String Vals) {
+
+
 
         this.Fname = Fname;
         this.Mac = Mac;
         this.IP = IP;
+        this.Verbs = new ArrayList<String>();
+        this.Vals = new ArrayList<String>();
+
+        if (Verbs.contains(",")) {
+            List<String> verbslist = Arrays.asList(Verbs.split("\\s*,\\s*"));
+            this.Verbs = verbslist;
+        } else {
+            this.Verbs.add(Verbs);
+        }
         if (Vals.contains(",")) {
             List<String> valslist = Arrays.asList(Vals.split("\\s*,\\s*"));
             this.Vals = valslist;
@@ -87,11 +99,11 @@ public class Node {
             IP = IP.substring(1, IP.length());
         }
 
-        int response = Ping(300);
+        int response = Ping(500);
         if (response == -1) {
 
             if (!this.IP.contains("L")) {
-                this.IP = "L" + this.IP;                //give this IP an L, but we dont wanna be too destructive so its added
+                this.IP = "L" + this.IP;     //give this IP an L, we dont wanna be too destructive so its added
             }
 
             this.isOnline = false;
@@ -121,6 +133,7 @@ public class Node {
             // optional default is GET
             con.setRequestMethod("GET");
             con.setConnectTimeout(timeout); //time in microseconds
+            con.setReadTimeout(timeout);
             //add request header
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
 
@@ -143,14 +156,16 @@ public class Node {
                 IP=IP.substring(1,IP.length());
             }
             try {
-                String response = HTTPGET(this.IP, val, 200);
+                String response = HTTPGET(this.IP, val, 500);
 
             } catch (SocketTimeoutException e) {
                 System.out.println("connection Timeout from Node.Send.timeout");
+                System.out.println(Fname+" is offline");
                 if(!getIP().contains("L")){
                     setIP("L"+getIP());
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("nodeObject failed to send to "+IP);;
 
             }
@@ -161,7 +176,7 @@ public class Node {
     public void StartDeepScanForMac() {
         int response = Ping(200);
         if(response==-1){
-            Thread t = new Thread(new DeepScan(100,170,190,0));             //TODO this shouldn't be hardcoded at all lol
+            Thread t = new Thread(new DeepScan(192,168,0,0));             //TODO this shouldn't be hardcoded at all lol
             t.start();
             return;
         }
@@ -230,6 +245,10 @@ public class Node {
         return Vals;
     }
 
+    public List<String> getVerbs() {
+        return Verbs;
+    }
+
     public class DeepScan implements Runnable {                 ///Constructor takes octets of an ip as 4 ints. oct 1 and 2 are fixed, oct 3 and 4 are "start-from" to 255
 
         private String Nodeipsfile;
@@ -264,6 +283,7 @@ public class Node {
                 x++;
             }
 
+            int pingTimeout = 800;
             //System.out.println(String.join(",", IPList));
             int ipnum=0;
             int responseCode;
@@ -272,11 +292,11 @@ public class Node {
                 if(ipnum%255==0){
                 System.out.println(node.Fname + "(" + node.Mac + ") Node deepscan:"+ipnum+"/"+IPList.size()+" "+ip);
                 }
-                responseCode = Ping(ip, 30);
+                responseCode = Ping(ip, pingTimeout);
                 if (responseCode != 200) {
-                    //System.out.println("ping fail ("+responseCode+")");
+                    //System.out.println("Deep Scan ("+responseCode+")");
                 } else {
-                    //System.out.println(node.Fname + " (" + node.Mac + ")" + " deepscan: Found a webserver at http://" + ip);
+                    System.out.println(node.Fname + " (" + node.Mac + ")" + " deepscan: Found a webserver at http://" + ip);
                     try {
                         String response = HTTPGET(ip, "",100);
                         //System.out.println(response);
@@ -307,6 +327,7 @@ public class Node {
                 // optional default is GET
                 con.setRequestMethod("GET");
                 con.setConnectTimeout(timeout); //time in microseconds
+                con.setReadTimeout(timeout);
                 //add request header
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
 
@@ -316,7 +337,8 @@ public class Node {
                 //System.out.println("err timout");
 
             } catch (java.io.IOException e) {
-
+                System.out.println("io Exception node.deepscan.ping");
+                e.printStackTrace();
             }
             return responseCode;
 

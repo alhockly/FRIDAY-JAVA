@@ -2,10 +2,7 @@ package model;
 
 
 import java.io.*;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +18,7 @@ import java.util.logging.Logger;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Port;
 
+import com.sun.net.httpserver.HttpServer;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -34,11 +32,9 @@ public class SpeechRecognizerMain {
 	TextToSpeech voice = new TextToSpeech();
 
 
-
-
 	List<Node> NodeObjectList = new ArrayList<Node>();
 
-
+	private boolean Listening;
 
 	private float gain = 0.5f;
 
@@ -84,7 +80,8 @@ public class SpeechRecognizerMain {
 	 * This executor service is used in order the playerState events to be executed in an order
 	 */
 	private ExecutorService eventsExecutorService = Executors.newFixedThreadPool(2);
-	
+
+
 	//------------------------------------------------------------------------------------
 
 
@@ -95,6 +92,7 @@ public class SpeechRecognizerMain {
 	 */
 	public SpeechRecognizerMain(List<Node> nodeObjectList) {
 
+		Listening=false;
 		voice.setVoice("cmu-slt-hsmm");
 		this.NodeObjectList=nodeObjectList;
 
@@ -273,26 +271,48 @@ public class SpeechRecognizerMain {
 	 * @param speechWords
 	 */
 	public void makeDecision(String speech , List<WordResult> speechWords) {
-		
 		//System.out.println(speech);
 		//System.out.println(speechWords.toString());
+		if(speech.contains("<unk>")){
+			Listening=false;
+		}
+		if(speech.contains("friday")){
+			Listening=true;
+		}
+		//System.out.println("Listening? "+Listening);
 
-
-		if(speech.contains("friday")) {
+		if(Listening==true) {
 
 			//if speech contains fname and val in either order, send val to the node with Fname
 			for(Node node: NodeObjectList){
+				String value=null;
 				//System.out.println(node.getFname()+node.getMac()+node.getIP());
 				if(speech.contains(node.getFname())){
-					for(String val : node.getVals()){
-						if(speech.contains(val)){
-							System.out.println("found match! send >"+val+"< to "+node.getFname()+" @ "+node.getIP());
-							if(node.getIP().equals("") || node.getIP().equals("L")){
-								System.out.println("unable to send, IP of node unknown");
+					for(String verb : node.getVerbs()){
+						if((speech.contains(verb)&& !verb.equals(""))){
+							for(String val : node.getVals()){
+								if(speech.contains(val)){
+									value=val;
+								}
+							}
+							if(value.equals("")){
+								System.out.println("verb command");
+								System.out.println("found match! send >" + verb + "< to " + node.getFname() + " @ " + node.getIP());
+								if (node.getIP().equals("") || node.getIP().equals("L")) {
+									System.out.println("unable to send, IP of node unknown");
+								} else {
+									node.Send(verb);
+									return;
+								}
 							}
 							else {
-								node.Send(val);
-								return;
+								System.out.println("found match! send >" + value + "< to " + node.getFname() + " @ " + node.getIP());
+								if (node.getIP().equals("") || node.getIP().equals("L")) {
+									System.out.println("unable to send, IP of node unknown");
+								} else {
+									node.Send(value);
+									return;
+								}
 							}
 						}
 					}
@@ -322,110 +342,16 @@ public class SpeechRecognizerMain {
 					}
 				nodeCommands=nodecount*valscount;
 				System.out.println(nodeCommands+" commands"+" 2 system commands");
-				voice.speak(nodeCommands+" node commands and 2 system commands",gain, false, true);
+				//voice.speak(nodeCommands+" node commands and 2 system commands",gain, false, true);
 			}
 		}
 	}
 
-	private String HTTPGET(String IP, String path, int timeout) throws Exception {
-
-		String url="http://"+IP+path;
-
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-		// optional default is GET
-		con.setRequestMethod("GET");
-		//con.setConnectTimeout(10);
-		con.setConnectTimeout(timeout);
-		//add request header
-		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-		int responseCode=-1;
-		try {
-			responseCode = con.getResponseCode();
-		} catch (SocketTimeoutException e){
-
-			System.out.println("connection Timeout");
-			//System.out.println("//ip for node should be removed");
-			return Integer.toString(responseCode);
-		}catch (ConnectException f){
-			System.out.println("http get timeout");
-		}
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
-
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-
-		//print result
-		//System.out.println(response.toString());
-
-
-
-		return response.toString();
-
-	}
 
 
 
 
 
-
-	public void RebuildNodeMap(){
-
-
-	}
-
-	public int Ping(String ip, int timeout){
-
-		int responseCode =-1;
-		try {
-
-		String url="http://"+ip;
-
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		// optional default is GET
-		con.setRequestMethod("GET");
-		con.setConnectTimeout(timeout); //time in microseconds
-		//add request header
-		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-
-		responseCode = con.getResponseCode();
-
-		} catch (java.net.SocketTimeoutException e) {
-			System.out.println("err timout");
-		} catch (java.io.IOException e) {
-
-		}
-		return responseCode;
-
-	}
-
-
-
-
-
-	private void GETNODEDATA(String response){
-		if(response.toLowerCase().contains("lights) - state off")){
-
-			isLightsOn=false;
-
-		}
-		if(response.toLowerCase().contains("lights) - state on")){
-
-			isLightsOn=true;
-		}
-
-	}
 
 
 	private static List<Node> ReadXML(){			///return list of node objects
@@ -452,13 +378,14 @@ public class SpeechRecognizerMain {
 				String Fname = node.substring(node.indexOf("<FName>") + 7, node.indexOf("</FName>"));
 				String Mac = node.substring(node.indexOf("<Mac>") + 5, node.indexOf("</Mac>"));
 				String IP = node.substring(node.indexOf("<IP>") + 4, node.indexOf("</IP>"));
+				String verbs = node.substring(node.indexOf("<Verbs>") + 7, node.indexOf("</Verbs>"));
 				String vals = node.substring(node.indexOf("<Vals>") + 6, node.indexOf("</Vals>"));
 
-					NodeObjectList.add(new Node(Fname.toLowerCase(),Mac,IP,vals.toLowerCase()));
+
+
+					NodeObjectList.add(new Node(Fname.toLowerCase(),Mac,IP,verbs.toLowerCase(),vals.toLowerCase()));
 				}
 			}
-
-
 
 
 		} catch (FileNotFoundException e) {
@@ -522,9 +449,23 @@ public class SpeechRecognizerMain {
 
 		for (Node node : NodeObjectList){
 			Appliances.add(node.getFname());
-			String actions ="<"+node.getFname()+"vals> = ("+String.join(" | ",node.getVals())+");";
-			String syntax = "public <"+node.getFname()+"syntax> = <StartListen> <appliance> <"+node.getFname()+"vals>;";
-			gramToAdd.add(actions);
+
+			String syntax = "public <"+node.getFname()+"syntax> = <StartListen> <"+node.getFname()+"verbs> <appliance>";
+
+			if(!node.getVals().get(0).equals("")){
+				String vals ="<"+node.getFname()+"vals> = ("+String.join(" | ",node.getVals())+");";
+				gramToAdd.add(vals);
+
+				syntax=syntax+"<"+node.getFname()+"vals>;";
+			}
+			syntax=syntax+";";
+
+			String verbs = "<"+node.getFname()+"verbs> = ("+String.join(" | ",node.getVerbs())+");";
+
+
+
+			gramToAdd.add(verbs);
+
 			gramToAdd.add(syntax);
 
 
@@ -557,6 +498,24 @@ public class SpeechRecognizerMain {
 
 
 	}
+	public static void StartHttpServer() throws IOException {
+		InetSocketAddress addr = new InetSocketAddress(80);
+		HttpServer server = HttpServer.create(addr, 0);
+
+		server.createContext("/", new MyHandler());
+		server.setExecutor(Executors.newCachedThreadPool());
+		server.start();
+		System.out.println("Server is listening on port 80" );
+	}
+
+
+
+
+
+
+
+
+
 	/**
 	 * Main Method
 	 * 
@@ -564,12 +523,20 @@ public class SpeechRecognizerMain {
 	 */
 	public static void main(String[] args) {
 		List<Node> NodeObjectList = ReadXML();
-		System.out.println("Checking Node availability");
+		System.out.println("Pinging Nodes");
 		checkNodesOnline(NodeObjectList);
 		System.out.println("rebuilding grammer");
 		RebuildGrammar(NodeObjectList);
+		try {
+			StartHttpServer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		new SpeechRecognizerMain(NodeObjectList);
 	}
 }
+
+
+
 

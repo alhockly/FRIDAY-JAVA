@@ -6,7 +6,7 @@
 
 grammar grammar;
 
-
+<noise> = (some other words to add as distraction);
 <StartListen> = (friday);
 <thankwords> = (thanks | good bot);
 <deepscan> = (deep scan for);
