@@ -32,7 +32,11 @@ public class SpeechRecognizerMain {
 	TextToSpeech voice = new TextToSpeech();
 
 
-	List<Node> NodeObjectList = new ArrayList<Node>();
+	public List<Node> GetNodeObjectList(){
+		return NodeObjectList;
+	}
+
+	public List<Node> NodeObjectList = new ArrayList<Node>();
 
 	private boolean Listening;
 
@@ -350,11 +354,7 @@ public class SpeechRecognizerMain {
 
 
 
-
-
-
-
-	private static List<Node> ReadXML(){			///return list of node objects
+	public static List<Node> ReadXML(){			///return list of node objects
 		List<Node> NodeObjectList = new ArrayList<Node>();
 		int numNodes=0;
 		try {
@@ -363,7 +363,6 @@ public class SpeechRecognizerMain {
 
 			Nodes.add("");
 			while(scan.hasNextLine()){
-
 				String line = scan.nextLine();
 				if(line.equals("<Node>")){
 					numNodes++;
@@ -392,7 +391,7 @@ public class SpeechRecognizerMain {
 			e.printStackTrace();
 
 		}
-		System.out.println("Got "+numNodes+" Nodes from xml");
+		//System.out.println("Got "+numNodes+" Nodes from xml");
 		return NodeObjectList;
 
 	}

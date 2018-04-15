@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.*;
 import java.util.*;
 
 public class MyHandler implements HttpHandler {
@@ -26,7 +27,27 @@ public class MyHandler implements HttpHandler {
 
 
 
-            String page = GetPageTemplate()+"<br>Running grammer:<br><div style='background-color:#fbe4d2;'><p class='code'>";
+            String page = GetPageTemplate();
+
+            page+="@"+InetAddress.getLocalHost().toString()+"</h1>";
+
+            page+="Nodes:<br>";
+
+            List<Node> Nodes =SpeechRecognizerMain.ReadXML();
+            for(Node node: Nodes){
+                String name= node.getFname();
+                page+="<p>"+name+"@";
+                if(node.Checkonline()){
+                    page+="<a href='http://"+node.getIP()+"'>"+node.getIP()+"</a></p>";
+                }
+                else{
+                    page+="Offline :(</p>";
+                }
+
+
+            }
+
+            page+="<br>Running grammer:<br><div style='background-color:#fbe4d2;'><p class='code'>";
 
 
             for(String line : GetGrammer()){
@@ -36,6 +57,7 @@ public class MyHandler implements HttpHandler {
 
             }
             page+="</p></div>";
+
 
 
             page+="<a href='/restart'>Restart</a>";
@@ -61,6 +83,37 @@ public class MyHandler implements HttpHandler {
         }
         return  gram;
     }
+
+
+    public String GetSelfIP(){
+        String ip="";
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+                if (iface.isLoopback() || !iface.isUp())
+                    continue;
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while(addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    // *EDIT*
+                    if (addr instanceof Inet4Address) continue;
+
+                    ip = addr.getHostAddress();
+                    System.out.println(iface.getDisplayName() + " " + ip);
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return ip;
+    }
+
+
+
     public String GetPageTemplate(){
         String template="";
         Scanner scan = null;
