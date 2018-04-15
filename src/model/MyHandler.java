@@ -13,6 +13,7 @@ import java.util.*;
 public class MyHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
+        System.out.println("Port 80:    "+requestMethod+" "+exchange.getRequestURI());
         if (requestMethod.equalsIgnoreCase("GET")) {
             Headers responseHeaders = exchange.getResponseHeaders();
             responseHeaders.set("Content-Type", "text/html");
@@ -25,7 +26,7 @@ public class MyHandler implements HttpHandler {
 
 
 
-            String page = GetPageTemplate()+"<br>Grammer<br>";
+            String page = GetPageTemplate()+"<br>Running grammer:<br><div style='background-color:#fbe4d2;'><p class='code'>";
 
 
             for(String line : GetGrammer()){
@@ -34,6 +35,10 @@ public class MyHandler implements HttpHandler {
                 page=page+line+"<br>";
 
             }
+            page+="</p></div>";
+
+
+            page+="<a href='/restart'>Restart</a>";
 
             responseBody.write(page.getBytes());
 
