@@ -2,7 +2,7 @@
 <Node>
 	<FName>wheel</FName>
 	<Mac>68:C6:3A:AC:55:A7</Mac>
-<IP>192.168.0.13</IP>
+	<IP>192.168.0.14</IP>
 	<Verbs>spin</Verbs>
 	<Vals></Vals>
 </Node>

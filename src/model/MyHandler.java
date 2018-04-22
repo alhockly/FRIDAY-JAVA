@@ -9,64 +9,86 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MyHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
-        System.out.println("Port 80:    "+requestMethod+" "+exchange.getRequestURI());
+        System.out.println("Port 80:    " + requestMethod + " " + exchange.getRequestURI().toString());
+
+
+        OutputStream responseBody = exchange.getResponseBody();
         if (requestMethod.equalsIgnoreCase("GET")) {
+
+
             Headers responseHeaders = exchange.getResponseHeaders();
             responseHeaders.set("Content-Type", "text/html");
             exchange.sendResponseHeaders(200, 0);
 
-            OutputStream responseBody = exchange.getResponseBody();
+            responseBody = exchange.getResponseBody();
             Headers requestHeaders = exchange.getRequestHeaders();
             Set<String> keySet = requestHeaders.keySet();
             Iterator<String> iter = keySet.iterator();
 
-
-
-            String page = GetPageTemplate();
-
-            page+="@"+InetAddress.getLocalHost().toString()+"</h1>";
-
-            page+="Nodes:<br>";
-
-            List<Node> Nodes =SpeechRecognizerMain.ReadXML();
-            for(Node node: Nodes){
-                String name= node.getFname();
-                page+="<p>"+name+"@";
-                if(node.Checkonline()){
-                    page+="<a href='http://"+node.getIP()+"'>"+node.getIP()+"</a></p>";
+            String exchangeuri = exchange.getRequestURI().getPath();
+            String Query = exchange.getRequestURI().getQuery();
+            if (exchangeuri.equals(new String("/favicon.ico"))) {
+                Path path = Paths.get("resource/web-facing/favicon.ico");
+                byte[] data = Files.readAllBytes(path);
+                int x = 0;
+                while (x < data.length) {
+                    responseBody.write(data[x]);
+                    x++;
                 }
-                else{
-                    page+="Offline :(</p>";
+                responseBody.close();
+            }
+            if(exchangeuri.equals(new String("/"))){
+
+                String page = GetPageTemplate();
+                page += "@" + InetAddress.getLocalHost().toString() + "</h1>";
+                page += "Nodes:<br>";
+
+                for (Node node : SpeechRecognizerMain.ReadXML()) {
+                    String name = node.getFname();
+                    page += "<p>" + name + "@";
+                    if (node.Checkonline()) {
+                        page += "<a href='http://" + node.getIP() + "'>" + node.getIP() + "</a></p>";
+                    } else {
+                        page += "Offline :(</p>";
+                    }
+                }
+
+                page += "<p>Add a node <form>  Name <input name='name'</input> Mac <input name='mac'</input> Verbs <input name='verbs'</input> Vals <input name='vals'</input><button type='submit'>Sendo</button></form></p>";
+
+                page += "<br>Running grammer:<br><div style='background-color:#fbe4d2;'><p class='code'>";
+                for (String line : GetGrammer()) {
+                    line = line.replace("<", "&lt;");
+                    line = line.replace(">", "&gt;");
+                    page = page + line + "<br>";
+
+                }
+                page += "</p></div>";
+                page += "<a href='/restart'>Restart</a>";
+                responseBody.write(page.getBytes());
+                responseBody.close();
+
+                if (Query.contains(new String("name=")) && Query.contains(new String("vals=")) && Query.contains(new String("verbs=")) && Query.contains(new String("mac="))) {
+                    String[] nodeparts = Query.split("&");
+                    String name=nodeparts[0].replace("name=","");
+                    String mac=nodeparts[1].replace("mac=","");
+                    String verbs=nodeparts[2].replace("verbs=","");
+                    String vals=nodeparts[3].replace("vals=","");
+                    System.out.println("Port 80: New node("+mac+") "+name+": with vals "+vals+" and verbs "+verbs);
                 }
 
 
             }
-
-            page+="<br>Running grammer:<br><div style='background-color:#fbe4d2;'><p class='code'>";
-
-
-            for(String line : GetGrammer()){
-                line = line.replace("<","&lt;");
-                line = line.replace(">","&gt;");
-                page=page+line+"<br>";
-
-            }
-            page+="</p></div>";
-
-
-
-            page+="<a href='/restart'>Restart</a>";
-
-            responseBody.write(page.getBytes());
-
-            responseBody.close();
         }
     }
+
 
     public List<String> GetGrammer(){
         List<String> gram = new ArrayList<>();

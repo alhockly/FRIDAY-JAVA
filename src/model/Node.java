@@ -338,7 +338,7 @@ public class Node {
 
             } catch (java.io.IOException e) {
                 System.out.println("io Exception node.deepscan.ping");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             return responseCode;
 
