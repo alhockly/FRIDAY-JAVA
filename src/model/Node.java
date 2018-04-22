@@ -53,12 +53,30 @@ public class Node {
 
     }
 
+
+    @Override
+    public String toString(){
+
+        String toreturn= "<Node>\n\t<FName>"+Fname+"</FName>\n\t<Mac>"+Mac+"</Mac>\n\t<IP>"+IP+"</IP>\n\t<Verbs>";
+
+        for(String verb : Verbs){
+            toreturn+=verb;
+        }
+        toreturn+="</Verbs>\n\t<Vals>";
+
+        for(String val:Vals){
+            toreturn+=val;
+        }
+        toreturn+="</Vals>\n</Node>";
+        return toreturn;
+    }
+
     public void UpdateXMLIP(){
         System.out.println("adding new ip "+IP+" to XML");
         List<String> Nodesxml = new ArrayList<String>();
         Scanner scan = null;
         try {
-            scan = new Scanner(new File("src/Nodes.xml"));
+            scan = new Scanner(new File("resource/Nodes.xml"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -79,7 +97,7 @@ public class Node {
 
         PrintWriter out = null;
         try {
-            out = new PrintWriter("src/Nodes.xml");
+            out = new PrintWriter("resource/Nodes.xml");
             for(String line : Nodesxml){
                 out.println(line);
             }
@@ -337,7 +355,7 @@ public class Node {
                 //System.out.println("err timout");
 
             } catch (java.io.IOException e) {
-                System.out.println("io Exception node.deepscan.ping");
+                //System.out.println("io Exception node.deepscan.ping");
                 //e.printStackTrace();
             }
             return responseCode;

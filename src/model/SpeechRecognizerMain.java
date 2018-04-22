@@ -368,10 +368,11 @@ public class SpeechRecognizerMain {
 					numNodes++;
 					Nodes.add("");
 				}
-				Nodes.set(Nodes.size()-1, Nodes.get(Nodes.size()-1)+line );
+				Nodes.set(Nodes.size()-1, Nodes.get(Nodes.size()-1)+line );		//add line to end of Nodes
 
 			}
 			for(String node : Nodes) {
+				node.replace("</XML>","");
 				if (node.contains("<Node>")) {
 				//System.out.println(node);
 				String Fname = node.substring(node.indexOf("<FName>") + 7, node.indexOf("</FName>"));
@@ -510,7 +511,18 @@ public class SpeechRecognizerMain {
 
 
 
-
+	private static boolean IsInternetAvailable() {
+		try {
+			final URL url = new URL("http://www.github.com");
+			final URLConnection conn = url.openConnection();
+			conn.connect();
+			return true;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
 
 

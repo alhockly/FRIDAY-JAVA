@@ -4,10 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,6 +79,8 @@ public class MyHandler implements HttpHandler {
                     String verbs=nodeparts[2].replace("verbs=","");
                     String vals=nodeparts[3].replace("vals=","");
                     System.out.println("Port 80: New node("+mac+") "+name+": with vals "+vals+" and verbs "+verbs);
+
+                    AddNodeTOXML(new Node(name,mac,"",verbs,vals));
                 }
 
 
@@ -89,6 +88,46 @@ public class MyHandler implements HttpHandler {
         }
     }
 
+
+    public void AddNodeTOXML(Node node) {
+
+        List<String> Nodesxml=ReadNodeXML();
+
+        Nodesxml.add(node.toString());
+
+        Nodesxml.add("</XML>");
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter("resource/Nodes.xml");
+            for(String line : Nodesxml){
+                out.println(line);
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //Refresh handler
+    }
+
+
+    public List<String> ReadNodeXML(){
+        List<String> Nodesxml = new ArrayList<String>();
+        Scanner scan = null;
+        try {
+            scan = new Scanner(new File("resource/Nodes.xml"));
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+                if(!line.equals("</XML>")) {
+                    Nodesxml.add(line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return Nodesxml;
+    }
 
     public List<String> GetGrammer(){
         List<String> gram = new ArrayList<>();
