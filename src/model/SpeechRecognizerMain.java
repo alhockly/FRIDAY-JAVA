@@ -358,7 +358,7 @@ public class SpeechRecognizerMain {
 		List<Node> NodeObjectList = new ArrayList<Node>();
 		int numNodes=0;
 		try {
-			Scanner scan = new Scanner(new File("src/Nodes.xml"));
+			Scanner scan = new Scanner(new File("resource/Nodes.xml"));
 			List<String> Nodes = new ArrayList<String>();
 
 			Nodes.add("");
