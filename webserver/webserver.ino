@@ -10,7 +10,7 @@
 WiFiUDP udp;
 
 // Replace with your network credentials
-const char* ssid = "VM907180-5G";
+const char* ssid = "VM907180-2G";
 const char* password = "qaheyusq";
 
 const int dstPort = 5000;
