@@ -6,7 +6,7 @@
 
 grammar grammar;
 
-
+<noise> = (some other words to add as distraction);
 <StartListen> = (friday);
 <thankwords> = (thanks | good bot);
 <deepscan> = (deep scan for);
@@ -14,6 +14,6 @@ grammar grammar;
 public <numCommands> = <StartListen> <cuanto> (voice commands do you have);
 public <scanfornodes> = <StartListen> <deepscan> <appliance>;
 public <graditude> = <thankwords> <StartListen>;
-<lightsvals> = (on | off | blink);
-public <lightssyntax> = <StartListen> <appliance> <lightsvals>;
-<appliance> = (lights);
+<wheelverbs> = (spin);
+public <wheelsyntax> = <StartListen> <wheelverbs> <appliance>;
+<appliance> = (wheel);

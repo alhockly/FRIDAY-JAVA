@@ -3,9 +3,6 @@ NLP interface for IoT
 
 Java+NodeMcu(ESP8266)
 
-The Src folder doesn't include the required libraries :( 
-add a libraries folder from here:
-https://drive.google.com/drive/folders/11mN8ThTijDQ9fm833ay2pgQIvIEoTyq_?usp=sharing
 
 All libraries are open source and active so its advisable to get new versions if possible
 
