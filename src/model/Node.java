@@ -38,13 +38,13 @@ public class Node {
         this.Vals = new ArrayList<String>();
 
         if (Verbs.contains(",")) {
-            List<String> verbslist = Arrays.asList(Verbs.split("\\s*,\\s*"));
+            List<String> verbslist = Arrays.asList(Verbs.split(","));
             this.Verbs = verbslist;
         } else {
             this.Verbs.add(Verbs);
         }
         if (Vals.contains(",")) {
-            List<String> valslist = Arrays.asList(Vals.split("\\s*,\\s*"));
+            List<String> valslist = Arrays.asList(Vals.split(","));
             this.Vals = valslist;
         } else {
             this.Vals.add(Vals);
@@ -176,7 +176,7 @@ public class Node {
     public void StartDeepScanForMac() {
         int response = Ping(200);
         if(response==-1){
-            Thread t = new Thread(new DeepScan(192,168,0,0));             //TODO this shouldn't be hardcoded at all lol
+            Thread t = new Thread(new DeepScan(100,71,192,0));             //TODO this shouldn't be hardcoded at all lol
             t.start();
             return;
         }

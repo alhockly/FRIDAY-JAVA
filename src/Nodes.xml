@@ -1,9 +1,9 @@
 <XML>
 <Node>
-	<FName>wheel</FName>
-	<Mac>68:C6:3A:AC:55:A7</Mac>
-	<IP>192.168.0.14</IP>
-	<Verbs>spin</Verbs>
-	<Vals></Vals>
+	<FName>lights</FName>
+	<Mac>A0:20:A6:02:78:06</Mac>
+	<IP>100.71.194.108</IP>
+	<Verbs>switch,turn</Verbs>
+	<Vals>on,off</Vals>
 </Node>
 </XML>

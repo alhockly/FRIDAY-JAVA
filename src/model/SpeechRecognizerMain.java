@@ -457,8 +457,9 @@ public class SpeechRecognizerMain {
 
 				syntax=syntax+"<"+node.getFname()+"vals>;";
 			}
-			syntax=syntax+";";
-
+			else {
+				syntax = syntax + ";";
+			}
 			String verbs = "<"+node.getFname()+"verbs> = ("+String.join(" | ",node.getVerbs())+");";
 
 
