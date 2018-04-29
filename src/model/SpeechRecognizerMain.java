@@ -372,16 +372,14 @@ public class SpeechRecognizerMain {
 
 			}
 			for(String node : Nodes) {
-				node.replace("</XML>","");
+
 				if (node.contains("<Node>")) {
-				//System.out.println(node);
-				String Fname = node.substring(node.indexOf("<FName>") + 7, node.indexOf("</FName>"));
-				String Mac = node.substring(node.indexOf("<Mac>") + 5, node.indexOf("</Mac>"));
-				String IP = node.substring(node.indexOf("<IP>") + 4, node.indexOf("</IP>"));
-				String verbs = node.substring(node.indexOf("<Verbs>") + 7, node.indexOf("</Verbs>"));
-				String vals = node.substring(node.indexOf("<Vals>") + 6, node.indexOf("</Vals>"));
-
-
+					//System.out.println(node);
+					String Fname = node.substring(node.indexOf("<FName>") + 7, node.indexOf("</FName>"));
+					String Mac = node.substring(node.indexOf("<Mac>") + 5, node.indexOf("</Mac>"));
+					String IP = node.substring(node.indexOf("<IP>") + 4, node.indexOf("</IP>"));
+					String verbs = node.substring(node.indexOf("<Verbs>") + 7, node.indexOf("</Verbs>"));
+					String vals = node.substring(node.indexOf("<Vals>") + 6, node.indexOf("</Vals>"));
 
 					NodeObjectList.add(new Node(Fname.toLowerCase(),Mac,IP,verbs.toLowerCase(),vals.toLowerCase()));
 				}
@@ -501,12 +499,17 @@ public class SpeechRecognizerMain {
 	}
 	public static void StartHttpServer() throws IOException {
 		InetSocketAddress addr = new InetSocketAddress(80);
-		HttpServer server = HttpServer.create(addr, 0);
+		try {
+			HttpServer server = HttpServer.create(addr, 0);
+			server.createContext("/", new MyHandler());
+			server.setExecutor(Executors.newCachedThreadPool());
+			server.start();
+			System.out.println("Server is listening on port 80" );
+		}catch (SocketException e){
+			System.out.println("JAVA Socket Exception - webserver has failed to bind to port 80");
+		}
 
-		server.createContext("/", new MyHandler());
-		server.setExecutor(Executors.newCachedThreadPool());
-		server.start();
-		System.out.println("Server is listening on port 80" );
+
 	}
 
 

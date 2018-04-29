@@ -59,7 +59,7 @@ public class Node {
 
         String toreturn= "<Node>\n\t<FName>"+Fname+"</FName>\n\t<Mac>"+Mac+"</Mac>\n\t<IP>"+IP+"</IP>\n\t<Verbs>";
 
-        for(String verb : Verbs){
+        for(String verb : Verbs){                               ///TODO commas need to be added appropriately
             toreturn+=verb;
         }
         toreturn+="</Verbs>\n\t<Vals>";
@@ -192,9 +192,9 @@ public class Node {
     }
 
     public void StartDeepScanForMac() {
-        int response = Ping(200);
+        int response = Ping(500);      //maybe use a variable for this
         if(response==-1){
-            Thread t = new Thread(new DeepScan(100,71,192,0));             //TODO this shouldn't be hardcoded at all lol
+            Thread t = new Thread(new DeepScan(100,71,196,130));             //TODO this shouldn't be hardcoded at all lol
             t.start();
             return;
         }
@@ -316,7 +316,7 @@ public class Node {
                 } else {
                     System.out.println(node.Fname + " (" + node.Mac + ")" + " deepscan: Found a webserver at http://" + ip);
                     try {
-                        String response = HTTPGET(ip, "",100);
+                        String response = HTTPGET(ip, "",400);
                         //System.out.println(response);
                         if (response.contains(node.Mac)) {
                             System.out.println("Found " + node.Fname + "(" + node.Mac + ")" + " @ " + ip+" out of "+IPList.size()+" IPs");
