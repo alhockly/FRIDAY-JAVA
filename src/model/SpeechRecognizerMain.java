@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioPermission;
 import javax.sound.sampled.Port;
 
 import com.sun.net.httpserver.HttpServer;
@@ -30,6 +31,7 @@ public class SpeechRecognizerMain {
 	//If the SpeechRecognizer constructor fails, its probably because the grammar is broken somehow
 
 	//TextToSpeech voice = new TextToSpeech();
+
 
 
 	public List<Node> GetNodeObjectList(){
@@ -528,6 +530,12 @@ public class SpeechRecognizerMain {
 	}
 
 
+	static void checkRecordPermission() throws SecurityException {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null) {
+			sm.checkPermission(new AudioPermission("record"));
+		}
+	}
 
 
 
@@ -537,6 +545,7 @@ public class SpeechRecognizerMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		checkRecordPermission();
 		List<Node> NodeObjectList = ReadXML();
 		System.out.println("Pinging Nodes");
 		checkNodesOnline(NodeObjectList);
