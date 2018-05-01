@@ -5,3 +5,4 @@ out*
 .idea*
 log*
 FRIDAY-Java.iml
+src/META-INF/MANIFEST.MF
