@@ -2,7 +2,7 @@
 <Node>
 	<FName>lights</FName>
 	<Mac>A0:20:A6:02:78:06</Mac>
-	<IP></IP>
+	<IP>L100.71.193.4</IP>
 	<Verbs>switch,turn</Verbs>
 	<Vals>on,off</Vals>
 </Node>

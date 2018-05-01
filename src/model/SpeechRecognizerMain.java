@@ -30,8 +30,7 @@ import tts.TextToSpeech;
 public class SpeechRecognizerMain {
 	//If the SpeechRecognizer constructor fails, its probably because the grammar is broken somehow
 
-	//TextToSpeech voice = new TextToSpeech();
-
+	TextToSpeech voice = new TextToSpeech();
 
 
 	public List<Node> GetNodeObjectList(){
@@ -44,7 +43,7 @@ public class SpeechRecognizerMain {
 
 	private float gain = 0.5f;
 
-	//TextToSpeech VoiceObject = new TextToSpeech();
+
 
 	Boolean isLightsOn;
 
@@ -99,7 +98,11 @@ public class SpeechRecognizerMain {
 	public SpeechRecognizerMain(List<Node> nodeObjectList) {
 
 		Listening=false;
-		//voice.setVoice("cmu-slt-hsmm");
+		try {
+			voice.setVoice("cmu-slt-hsmm");
+		}catch (NullPointerException e){
+
+		}
 		this.NodeObjectList=nodeObjectList;
 
 

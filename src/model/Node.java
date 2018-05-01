@@ -88,8 +88,8 @@ public class Node {
         for(String line : Nodesxml){
 
             if(line.contains(Mac)){
-                Nodesxml.set(count+1,"<IP>"+IP+"</IP>");
-                System.out.println(Nodesxml.toString());
+                Nodesxml.set(count+1,"\t<IP>"+IP+"</IP>");
+                //System.out.println(Nodesxml.toString());
                 break;
             }
             count++;
@@ -117,12 +117,14 @@ public class Node {
             IP = IP.substring(1, IP.length());
         }
 
-        int response = Ping(500);
+        int response = Ping(800);
         if (response == -1) {
 
             if (!this.IP.contains("L")) {
                 this.IP = "L" + this.IP;     //give this IP an L, we dont wanna be too destructive so its added
             }
+
+            UpdateXMLIP();
 
             this.isOnline = false;
             return false;
@@ -194,7 +196,7 @@ public class Node {
     public void StartDeepScanForMac() {
         int response = Ping(500);      //maybe use a variable for this
         if(response==-1){
-            Thread t = new Thread(new DeepScan(100,71,196,130));             //TODO this shouldn't be hardcoded at all lol
+            Thread t = new Thread(new DeepScan(100,71,193,0));             //TODO this shouldn't be hardcoded at all lol
             t.start();
             return;
         }
@@ -301,7 +303,7 @@ public class Node {
                 x++;
             }
 
-            int pingTimeout = 800;
+
             //System.out.println(String.join(",", IPList));
             int ipnum=0;
             int responseCode;
@@ -310,16 +312,18 @@ public class Node {
                 if(ipnum%255==0){
                 System.out.println(node.Fname + "(" + node.Mac + ") Node deepscan:"+ipnum+"/"+IPList.size()+" "+ip);
                 }
+                int pingTimeout = 800;
                 responseCode = Ping(ip, pingTimeout);
                 if (responseCode != 200) {
                     //System.out.println("Deep Scan ("+responseCode+")");
                 } else {
                     System.out.println(node.Fname + " (" + node.Mac + ")" + " deepscan: Found a webserver at http://" + ip);
+                    addToFoundIps(ip);
                     try {
-                        String response = HTTPGET(ip, "",400);
+                        String response = HTTPGET(ip, "",pingTimeout);
                         //System.out.println(response);
                         if (response.contains(node.Mac)) {
-                            System.out.println("Found " + node.Fname + "(" + node.Mac + ")" + " @ " + ip+" out of "+IPList.size()+" IPs");
+                            System.out.println("Found " + node.Fname + "(" + node.Mac + ")" + " @ " + ip);
                             node.setIP(ip);
                             node.UpdateXMLIP();
                             return;
@@ -409,6 +413,34 @@ public class Node {
 
 
             }
+    }
+
+    public void addToFoundIps(String ip){
+
+        List<String> foundips = new ArrayList<String>();
+        Scanner scan = null;
+        try {
+            scan = new Scanner(new File("resource/Foundips.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while(scan.hasNextLine()){
+            String line = scan.nextLine();
+            foundips.add(line);
+        }
+
+        foundips.add(ip);
+
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter("resource/Foundips.txt");
+            for(String ips: foundips) {
+                out.println(ips);
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
