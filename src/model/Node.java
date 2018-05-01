@@ -274,11 +274,10 @@ public class Node {
         private String Nodeipsfile;
         Node node = Node.this;
 
-        //defaults lol
-        int oct1 = 100;
-        int oct2 = 71;
-        int oct3 = 190;
-        int oct4 = 0;
+        int oct1;
+        int oct2;
+        int oct3;
+        int oct4;
 
 
         public DeepScan(int oct1,int oct2,int oct3,int oct4) {
@@ -289,6 +288,7 @@ public class Node {
         }
 
         public void run() {
+            System.out.println(ANSI.ANSI_CYAN);
             System.out.println("Deep Scan Running, searching for " + node.Fname + " Node (" + node.Mac + ")");
             List<String> IPList = new ArrayList<String>();
 

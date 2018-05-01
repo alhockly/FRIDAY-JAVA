@@ -199,8 +199,9 @@ public class SpeechRecognizerMain {
 								speechRecognitionResult = speechResult.getHypothesis();
 								
 								//You said?
+								System.out.println(ANSI.ANSI_BLUE);
 								System.out.println("You said: [" + speechRecognitionResult + "]\n");
-								
+								System.out.println(ANSI.ANSI_RESET);
 								//Call the appropriate method 
 								makeDecision(speechRecognitionResult, speechResult.getWords());
 								
@@ -284,10 +285,13 @@ public class SpeechRecognizerMain {
 		//System.out.println(speechWords.toString());
 		if(speech.contains("<unk>")){
 			Listening=false;
+
 		}
 		if(speech.contains("friday")){
 			Listening=true;
+
 		}
+
 		//System.out.println("Listening? "+Listening);
 
 		if(Listening==true) {
@@ -306,7 +310,9 @@ public class SpeechRecognizerMain {
 							}
 							if(value.equals("")){
 								System.out.println("verb command");
+								System.out.println(ANSI.ANSI_BLUE);
 								System.out.println("found match! send >" + verb + "< to " + node.getFname() + " @ " + node.getIP());
+								System.out.println(ANSI.ANSI_RESET);
 								if (node.getIP().equals("") || node.getIP().equals("L")) {
 									System.out.println("unable to send, IP of node unknown");
 								} else {
@@ -315,7 +321,9 @@ public class SpeechRecognizerMain {
 								}
 							}
 							else {
+								System.out.println(ANSI.ANSI_BLUE);
 								System.out.println("found match! send >" + value + "< to " + node.getFname() + " @ " + node.getIP());
+								System.out.println(ANSI.ANSI_RESET);
 								if (node.getIP().equals("") || node.getIP().equals("L")) {
 									System.out.println("unable to send, IP of node unknown");
 								} else {
