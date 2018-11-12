@@ -24,7 +24,7 @@ import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.result.WordResult;
-import tts.TextToSpeech;
+import marytts.TextToSpeech;
 
 
 public class SpeechRecognizerMain {
@@ -43,12 +43,12 @@ public class SpeechRecognizerMain {
 
 	private float gain = 0.5f;
 
-
+	public boolean threadstarted=false;
 
 	Boolean isLightsOn;
 
 	// Necessary
-	private LiveSpeechRecognizer recognizer;
+	LiveSpeechRecognizer recognizer;
 	
 	// Logger
 	private Logger logger = Logger.getLogger(getClass().getName());
@@ -96,6 +96,9 @@ public class SpeechRecognizerMain {
 	 * @param nodeObjectList
 	 */
 	public SpeechRecognizerMain(List<Node> nodeObjectList) {
+
+
+
 
 		Listening=false;
 		try {
@@ -287,10 +290,7 @@ public class SpeechRecognizerMain {
 			Listening=false;
 
 		}
-		if(speech.contains("friday")){
-			Listening=true;
 
-		}
 
 		//System.out.println("Listening? "+Listening);
 
@@ -464,6 +464,7 @@ public class SpeechRecognizerMain {
 			String syntax = "public <"+node.getFname()+"syntax> = <StartListen> <"+node.getFname()+"verbs> <appliance>";
 
 			if(!node.getVals().get(0).equals("")){
+
 				String vals ="<"+node.getFname()+"vals> = ("+String.join(" | ",node.getVals())+");";
 				gramToAdd.add(vals);
 
@@ -551,7 +552,7 @@ public class SpeechRecognizerMain {
 
 
 	/**
-	 * Main Method
+	 * GooglespeechAPI Method
 	 * 
 	 * @param args
 	 */

@@ -6,3 +6,15 @@ out*
 log*
 FRIDAY-Java.iml
 src/META-INF/MANIFEST.MF
+target/classes/googleAPI/GoogleAPIMain$1.class
+target/classes/googleAPI/GoogleAPIMain.class
+target/classes/googleAPI/Timeout.class
+target/classes/marytts/AudioPlayer$Status.class
+target/classes/marytts/AudioPlayer.class
+target/classes/marytts/TextToSpeech.class
+target/classes/model/ANSI.class
+target/classes/model/MyHandler.class
+target/classes/model/Node$DeepScan.class
+target/classes/model/Node.class
+target/classes/model/SpeechRecognizerMain.class
+target/classes/model/testhttp.class

@@ -176,7 +176,7 @@ public class Node {
                 IP=IP.substring(1,IP.length());
             }
             try {
-                String response = HTTPGET(this.IP, val, 500);
+                String response = HTTPGET(this.IP, val, 2000);
 
             } catch (SocketTimeoutException e) {
                 System.out.println("connection Timeout from Node.Send.timeout");
@@ -196,7 +196,7 @@ public class Node {
     public void StartDeepScanForMac() {
         int response = Ping(500);      //maybe use a variable for this
         if(response==-1){
-            Thread t = new Thread(new DeepScan(100,71,193,0));             //TODO this shouldn't be hardcoded at all lol
+            Thread t = new Thread(new DeepScan(192,168,1,0));             //TODO this shouldn't be hardcoded at all lol
             t.start();
             return;
         }

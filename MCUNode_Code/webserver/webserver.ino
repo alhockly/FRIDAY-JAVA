@@ -1,17 +1,17 @@
-/*********
-  Rui Santos
-  Complete project details at http://randomnerdtutorials.com  
+/******
+code from http://randomnerdtutorials.com used
 *********/
 
 // Load Wi-Fi library
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <string.h>
 
 WiFiUDP udp;
 
 // Replace with your network credentials
-const char* ssid = "VM907180-2G";
-const char* password = "qaheyusq";
+const char* ssid = "Lil WiFi";
+const char* password = "Despacito2";
 
 const int dstPort = 5000;
 // Set web server port number to 80
@@ -27,13 +27,15 @@ String GPIO4State = "off";
 // Assign output variables to GPIO pins
 const int output5 = 5;
 const int GPIO4 = 4;
-
+const int GPIO8 = 15;
 void setup() {
   Serial.begin(9600);
   Serial.println("Hi I'm "+WiFi.macAddress());
   // Initialize the output variables as outputs
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(GPIO4, OUTPUT);
+
+  pinMode(15, INPUT_PULLUP);
   // Set outputs states
   digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(GPIO4, HIGH);
@@ -42,13 +44,33 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
+  int connecterr=0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    connecterr++;
+    if(connecterr>20){
+   
+      WiFi.begin("NodeNet","");
+      while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print("NodeNet.");
+      
+      }
+      
+      }
+
+
   }
   // Print local IP address and start web server
   Serial.println("");
-  Serial.println("WiFi connected.");
+  Serial.print("WiFi connected");
+  if(connecterr>20){
+  Serial.println("- NodeNet");}
+  else{
+    Serial.print("- ");
+    Serial.println(ssid);
+    }
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   server.begin();
@@ -79,6 +101,7 @@ void blink(){
 void loop(){
   WiFiClient client = server.available();   // Listen for incoming clients
 
+  Serial.println(digitalRead(15));
   if (client) {                             // If a new client connects,
     Serial.println("New Client.");          // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
@@ -97,6 +120,9 @@ void loop(){
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
+
+            char copy[20];
+            header.toCharArray(copy,20);
             
             // turns the GPIOs on and off
             if (header.indexOf("GET /5/on") >= 0) {
@@ -118,7 +144,12 @@ void loop(){
             }else if (header.indexOf("GET /blink") >= 0) {
               Serial.println("blinking");
               blink();
+            }else if (strstr(copy, "netconf?ssid=") != NULL) {
+                  // contains
+                  Serial.println("NEW Deeeets");
+                }{
               }
+            
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -152,6 +183,11 @@ void loop(){
               client.println("<p><a href=\"/off\"><button class=\"button button2\">OFF</button></a></p>");
             }
             client.println(WiFi.macAddress());
+
+            client.println("<br><h3>Set new network</h3>");
+            
+            client.println("<table><tr><th>ssid</th><th>pass</th></tr></table>");
+            client.println("<form action=\"netconf\"><input type=\"text\" name=\"ssid\"><input type=\"text\" name=\"pass\"><br><input type=\"submit\" value=\"Submit\"></form>");
             client.println("</body></html>");
             
             // The HTTP response ends with another blank line
