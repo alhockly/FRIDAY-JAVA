@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
+
 import javax.sound.sampled.LineUnavailableException;
 
 
@@ -29,12 +31,14 @@ public class GoogleAPIMain {
     public List<Node> NodeObjectList = new ArrayList<Node>();
     Timeout timeout;
 
-
+    SerialArduino nodemcu;
     private boolean threadstarted;
 
 
     public static void main(String[] args) {
+
         new GoogleAPIMain();
+
     }
 
     /**
@@ -43,6 +47,9 @@ public class GoogleAPIMain {
     public GoogleAPIMain() {
         NodeObjectList=ReadXML();
         timeout=new Timeout();
+
+        nodemcu = new SerialArduino();
+
 
         Thread timeouthread=new Thread(timeout);
         timeouthread.start();
@@ -94,6 +101,8 @@ public class GoogleAPIMain {
         if(output.toLowerCase().contains("off") && output.toLowerCase().contains("lights")){
             for(Node n:NodeObjectList){
                 if(n.getFname().equals("lights")){
+
+                    //nodemcu.send("0");
                     n.Send("off");
                     System.exit(0);
 
@@ -104,6 +113,7 @@ public class GoogleAPIMain {
             for(Node n:NodeObjectList){
                 if(n.getFname().equals("lights")){
                     n.Send("on");
+                    //nodemcu.send("1");
                     System.exit(0);
                 }
             }

@@ -1,7 +1,7 @@
 
 FRIDAY-Java - Copy/log/server.log
 out/production/FRIDAY-JAVA/tts/AudioPlayer.class
-out*
+
 .idea*
 log*
 FRIDAY-Java.iml
@@ -18,3 +18,14 @@ target/classes/model/Node$DeepScan.class
 target/classes/model/Node.class
 target/classes/model/SpeechRecognizerMain.class
 target/classes/model/testhttp.class
+out/artifacts/FRIDAY_JAVA_jar/hs_err_pid10060.log
+out/artifacts/FRIDAY_JAVA_jar/hs_err_pid13028.log
+out/artifacts/FRIDAY_JAVA_jar/hs_err_pid15136.log
+out/production/FRIDAY-JAVA/tts/TextToSpeech.class
+out/production/FRIDAY-JAVA/tts/AudioPlayer$Status.class
+out/production/FRIDAY-JAVA/model/ANSI.class
+out/production/FRIDAY-JAVA/model/MyHandler.class
+out/production/FRIDAY-JAVA/model/Node$DeepScan.class
+out/production/FRIDAY-JAVA/model/Node.class
+out/production/FRIDAY-JAVA/model/SpeechRecognizerMain.class
+out/production/FRIDAY-JAVA/model/testhttp.class

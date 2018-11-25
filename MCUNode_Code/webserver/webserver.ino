@@ -1,6 +1,14 @@
-/******
+    /******
 code from http://randomnerdtutorials.com used
 *********/
+//deigned for 3.3v relays and NodeMcu
+
+#include "ChainableLED.h"
+
+#define NUM_LEDS  1
+
+ChainableLED leds(14, 12, NUM_LEDS);
+
 
 // Load Wi-Fi library
 #include <ESP8266WiFi.h>
@@ -26,9 +34,17 @@ String GPIO4State = "off";
 
 // Assign output variables to GPIO pins
 const int output5 = 5;
-const int GPIO4 = 4;
+const int GPIO4 = 4;    //labeled as D2 on the board
 const int GPIO8 = 15;
+int incomingByte = 0;
+
+int red=200;
+int green=0;
+int blue=200;
+
 void setup() {
+  leds.init();
+  leds.setColorRGB(0,red,green,blue);
   Serial.begin(9600);
   Serial.println("Hi I'm "+WiFi.macAddress());
   // Initialize the output variables as outputs
@@ -49,7 +65,7 @@ void setup() {
     delay(500);
     Serial.print(".");
     connecterr++;
-    if(connecterr>20){
+    if(connecterr>100){
    
       WiFi.begin("NodeNet","");
       while (WiFi.status() != WL_CONNECTED) {
@@ -81,27 +97,75 @@ void setup() {
   udp.endPacket();
 }
 
-void blink(){
-  if(GPIO4State=="on"){
-    digitalWrite(GPIO4,LOW);
-    delay(550);
-    digitalWrite(GPIO4,HIGH);
-    }
-  if(GPIO4State=="off"){
-    digitalWrite(GPIO4,HIGH);
-    delay(550);
-    digitalWrite(GPIO4,LOW);
-    }
+void setRGB(int r, int g, int b){
+    red=r;
+    blue=b;
+    green=g;
+    
+  }
 
+void blink(){
+  leds.setColorRGB(0,0,255,0);
+  delay(300);
+
+  }
+
+void lights(int val){
+  if(val==0){
+    GPIO4State = "off";
+    setRGB(0,0,0);
+    digitalWrite(GPIO4,LOW);
+    }
+  else if(val==1){
+    GPIO4State = "on";
+    setRGB(200,0,200);
+    digitalWrite(GPIO4,HIGH);
+    }
+  
+  
   }
 
 
 
 
 void loop(){
+  if(red>0 || green>0 || blue>0){
+    GPIO4State="on";}
+    else{GPIO4State="off";}
+    leds.setColorRGB(0,red,green,blue);
+  
+   if (Serial.available() > 0) {
+                // read the incoming byte:
+                incomingByte = Serial.read();
+
+                // say what you got:
+                Serial.print("I received: ");
+                Serial.println(incomingByte, DEC);
+        }
+  if(incomingByte==10){
+    }
+  else if(incomingByte==49){
+    Serial.println("light on");
+    lights(1);
+    }
+  else if(incomingByte==48){
+    Serial.println("light off");
+    lights(0);
+    }
+  else if(incomingByte==50){
+      setRGB(255,0,0);
+    }
+  
+  else if(incomingByte==51){
+     setRGB(0,255,0);
+    }
+  else if(incomingByte==52){
+      setRGB(125,100,0);
+    }
+  
   WiFiClient client = server.available();   // Listen for incoming clients
 
-  Serial.println(digitalRead(15));
+  //Serial.println(digitalRead(15));
   if (client) {                             // If a new client connects,
     Serial.println("New Client.");          // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
@@ -135,16 +199,31 @@ void loop(){
               digitalWrite(LED_BUILTIN, LOW);
             } else if (header.indexOf("GET /on") >= 0) {
               Serial.println("GPIO 4 on");
+             
               GPIO4State = "on";
-              digitalWrite(GPIO4, HIGH);
+              lights(1);
             } else if (header.indexOf("GET /off") >= 0) {
               Serial.println("GPIO 4 off");
               GPIO4State = "off";
-              digitalWrite(GPIO4, LOW);
+              lights(0);
             }else if (header.indexOf("GET /blink") >= 0) {
               Serial.println("blinking");
               blink();
-            }else if (strstr(copy, "netconf?ssid=") != NULL) {
+            }else if(header.indexOf("GET /blue")>=0){
+              blue+=50;
+              if(blue>255){blue=0;}
+            }
+            else if(header.indexOf("GET /green")>=0){
+              green+=50;
+              if(green>255){green=0;}
+            }
+            else if(header.indexOf("GET /red")>=0){
+              red+=50;
+              if(red>255){red=0;}
+             
+            }
+            
+            else if (strstr(copy, "netconf?ssid=") != NULL) {
                   // contains
                   Serial.println("NEW Deeeets");
                 }{
@@ -164,7 +243,13 @@ void loop(){
             
             // Web Page Heading
             client.println("<body><h1>ESP8266 Web Server</h1>");
-            
+            client.print("<a href='/red'<p>red:");
+            client.print(red);
+            client.print("</p></a><a href='/green'><p>green:");
+            client.print(green);
+            client.print("</p></a><a href='/blue'><p>blue:");
+            client.print(blue);
+            client.print("</p></a>");
             // Display current state, and ON/OFF buttons for GPIO 5  
             client.println("<p>Built in LED - State " + output5State + "</p>");
             // If the output5State is off, it displays the ON button       
@@ -183,7 +268,8 @@ void loop(){
               client.println("<p><a href=\"/off\"><button class=\"button button2\">OFF</button></a></p>");
             }
             client.println(WiFi.macAddress());
-
+            
+            
             client.println("<br><h3>Set new network</h3>");
             
             client.println("<table><tr><th>ssid</th><th>pass</th></tr></table>");
