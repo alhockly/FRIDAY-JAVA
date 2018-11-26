@@ -3,6 +3,9 @@ NLP interface for IoT
 
 Java+Google Speech API+NodeMcu(ESP8266)+P9813 based LED Strip driver
 
+The porcupine hotword detection has a lot of dependencies (python3, numpy, soundfile, simple, pyaudio(unoffical binary [here]( https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio) if pip doesnt work))
+
+
 
 All libraries are open source and active so its advisable to get new versions if possible
 
