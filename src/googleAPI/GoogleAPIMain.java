@@ -40,7 +40,7 @@ public class GoogleAPIMain {
 
         new GoogleAPIMain();
 
-        new MakeSound().playSound("resource/focusbeep.wav");
+
 
     }
 
@@ -77,7 +77,7 @@ public class GoogleAPIMain {
 
 
         startSpeechRecognition();
-
+        new MakeSound().playSound("resource/focusbeep.wav");
     }
 
     /**
