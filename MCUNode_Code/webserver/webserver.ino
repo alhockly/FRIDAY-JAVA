@@ -41,8 +41,14 @@ int incomingByte = 0;
 int red=200;
 int green=0;
 int blue=200;
+int lastr,lastg,lastb;
+
+
 
 void setup() {
+  lastr=red;
+  lastg=green;
+  lastb=blue;
   leds.init();
   leds.setColorRGB(0,red,green,blue);
   Serial.begin(9600);
@@ -113,12 +119,15 @@ void blink(){
 void lights(int val){
   if(val==0){
     GPIO4State = "off";
+    lastr=red;
+    lastg=green;
+    lastb=blue;
     setRGB(0,0,0);
     digitalWrite(GPIO4,LOW);
     }
   else if(val==1){
     GPIO4State = "on";
-    setRGB(200,0,200);
+    setRGB(lastr,lastg,lastb);
     digitalWrite(GPIO4,HIGH);
     }
   
@@ -130,9 +139,13 @@ void lights(int val){
 
 void loop(){
   if(red>0 || green>0 || blue>0){
-    GPIO4State="on";}
+    GPIO4State="on";
+   
+    }
     else{GPIO4State="off";}
+    
     leds.setColorRGB(0,red,green,blue);
+    
   
    if (Serial.available() > 0) {
                 // read the incoming byte:
