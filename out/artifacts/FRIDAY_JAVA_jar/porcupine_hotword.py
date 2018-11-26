@@ -124,7 +124,7 @@ class PorcupineDemo(Thread):
                 result = porcupine.process(pcm)
                 if num_keywords == 1 and result:
                     print('[%s] detected keyword' % str(datetime.now()))
-                    playbeep()
+                    #playbeep()
                     os.system("java -jar FRIDAY-JAVA.jar")
 
                 elif num_keywords > 1 and result >= 0:
