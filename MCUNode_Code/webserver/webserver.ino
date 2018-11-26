@@ -127,6 +127,10 @@ void lights(int val){
     }
   else if(val==1){
     GPIO4State = "on";
+    if(lastr==0 && lastg==0 && lastb==0){
+    lastr=200;lastb=200;  
+    }
+    
     setRGB(lastr,lastg,lastb);
     digitalWrite(GPIO4,HIGH);
     }
@@ -140,7 +144,6 @@ void lights(int val){
 void loop(){
   if(red>0 || green>0 || blue>0){
     GPIO4State="on";
-   
     }
     else{GPIO4State="off";}
     
@@ -202,27 +205,7 @@ void loop(){
             header.toCharArray(copy,20);
             
             // turns the GPIOs on and off
-            if (header.indexOf("GET /5/on") >= 0) {
-              Serial.println("GPIO 5 on");
-              output5State = "on";
-              digitalWrite(LED_BUILTIN, HIGH);
-            } else if (header.indexOf("GET /5/off") >= 0) {
-              Serial.println("GPIO 5 off");
-              output5State = "off";
-              digitalWrite(LED_BUILTIN, LOW);
-            } else if (header.indexOf("GET /on") >= 0) {
-              Serial.println("GPIO 4 on");
-             
-              GPIO4State = "on";
-              lights(1);
-            } else if (header.indexOf("GET /off") >= 0) {
-              Serial.println("GPIO 4 off");
-              GPIO4State = "off";
-              lights(0);
-            }else if (header.indexOf("GET /blink") >= 0) {
-              Serial.println("blinking");
-              blink();
-            }else if(header.indexOf("GET /blue")>=0){
+            if(header.indexOf("GET /blue")>=0){
               blue+=50;
               if(blue>255){blue=0;}
             }
@@ -234,6 +217,31 @@ void loop(){
               red+=50;
               if(red>255){red=0;}
              
+            }
+
+            if(red>0 || green>0 || blue>0){
+              GPIO4State="on";
+            }
+            
+            if (header.indexOf("GET /5/on") >= 0) {
+              Serial.println("GPIO 5 on");
+              output5State = "on";
+              digitalWrite(LED_BUILTIN, HIGH);
+            } else if (header.indexOf("GET /5/off") >= 0) {
+              Serial.println("GPIO 5 off");
+              output5State = "off";
+              digitalWrite(LED_BUILTIN, LOW);
+            } else if (header.indexOf("GET /on") >= 0) {
+              Serial.println("GPIO 4 on");
+              GPIO4State = "on";
+              lights(1);
+            } else if (header.indexOf("GET /off") >= 0) {
+              Serial.println("GPIO 4 off");
+              GPIO4State = "off";
+              lights(0);
+            }else if (header.indexOf("GET /blink") >= 0) {
+              Serial.println("blinking");
+              blink();
             }
             
             else if (strstr(copy, "netconf?ssid=") != NULL) {
