@@ -17,6 +17,7 @@ import com.darkprograms.speech.recognizer.GSpeechDuplex;
 import com.darkprograms.speech.recognizer.GSpeechResponseListener;
 import com.darkprograms.speech.recognizer.GoogleResponse;
 
+
 import net.sourceforge.javaflacencoder.FLACFileWriter;
 
 import model.Node;
@@ -32,12 +33,14 @@ public class GoogleAPIMain {
     Timeout timeout;
 
     SerialArduino nodemcu;
-    private boolean threadstarted;
+
 
 
     public static void main(String[] args) {
 
         new GoogleAPIMain();
+
+        new MakeSound().playSound("resource/focusbeep.wav");
 
     }
 
@@ -121,15 +124,7 @@ public class GoogleAPIMain {
 
 
 
-        else{
-            //System.out.println("Not entered on any else if statement");
-        }
-
     }
-
-
-
-
 
 
 
